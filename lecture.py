@@ -1,147 +1,104 @@
-'''
-# Pronounced “Deck”
-* A Deque is a linear data structure that is more flexible
-than a stack and a queue
-    * A deque is also known as a “double-ended queue”
-* A deque allows us to insert and remove from both ends
-* Unlike a stack where we can only insert and remove from one end (top)
-And a queue where we can insert in the front and remove from the end of a list
-* Similar to a Stack and a Queue, we can implement Deques with a Python List
-'''
+'''Quick SOrt
+* Another divide and conquer algorithm
+* Cna improve running times to O(n log n) in a typical case,
+but we'll see that certain situations lead to )(n^2) on the worst case scenarios
+* However, this performs BETTER than Merge sort since it does not need
+additional space to sort elements
+* Idea:
+    * can sort a list by subdividing the list based oof of some PIVOT value
+        *Please elements < pivot to the left side of the list
+        *Please elements > pivot to the right side of the list
+        * Recurse for each left / right portion of the list
+        * we keep doing this until the sizes of each portion
+        ==1 then the entire list is sorted
+    * How do we partition the list into left / right sub lists?
+    * Choose pivot (typically first element in list)
+    *Find an element in the left side (using leftmark index)
+    that’s out-of-place (> pivot)
+    * Find an element in the right side (using rightmark index)
+    that’s out-of-place (< pivot)
+    * Swap out-of-place elements with each other
+        - We’re putting them in the correct side of the list!
+    * Continue doing steps 1 - 5 until the rightmark index < leftmark index
+        -Swap the pivot with rightmark index
+        -We’re putting the pivot element in the correct place!
+''''
 
-class Deque:
-    def __init__(self):
-	self.items = []
 
-    def isEmpty(self):
-	return self.items == []
-
-    def addFront(self, item):
-	self.items.append(item)
-
-    def addRear(self, item):
-	self.items.insert(0, item)
-
-    def removeFront(self):
-	return self.items.pop()
-
-    def removeRear(self):
-	return self.items.pop(0)
-
-    def size(self):
-	return len(self.items)
-
-# Pytests
-def test_Deque():
-    d = Deque()
-    assert d.isEmpty() == True
-    assert d.size() == 0
-    d.addFront(10)
-    d.addFront(20)
-    d.addRear(30)
-    d.addRear(40)
-    assert d.isEmpty() == False
-    assert d.size() == 4
-    assert d.removeFront() == 20
-    assert d.removeRear() == 40
-    assert d.isEmpty() == False
-    assert d.size() == 2
-    assert d.removeRear() == 30
-    assert d.removeRear() == 10
-    assert d.isEmpty() == True
-    assert d.size() == 0
 
 
 '''
-#Queue
-# A Queue is linear data structure that has the First In, First
-# Out (FIFO) property
-# Analogy: Think about standing in line (no cutting!)
-# Similar to a Stack, we can implement a Queue data structure
-# using a Python List
+MeregeSort
 
-class Queue:
-    def __init__(self):
-	self.items = []
-	
-    def isEmpty(self):
-	return self.items == []
-
-    def enqueue(self, item):
-	self.items.insert(0, item)
-
-    def dequeue(self):
-	return self.items.pop()
-
-    def size(self):
-	return len(self.items)
-
-# pytests
-def test_insertIntoQueue():
-	q = Queue()
-	assert q.isEmpty() == True
-	assert q.size() == 0
-	q.enqueue("Customer 1")
-	q.enqueue("Customer 2")
-	assert q.isEmpty() == False
-	assert q.size() == 2
-    
-def test_removeFromQueue():
-	q = Queue()
-	q.enqueue("Customer 1")
-	q.enqueue("Customer 2")
-	assert q.dequeue() == "Customer 1"
-	assert q.isEmpty() == False
-	assert q.size() == 1
-	assert q.dequeue() == "Customer 2"
-	assert q.isEmpty() == True
-	assert q.size() == 0
+Idea: Divide and conquer algorithm
+* Break a list into sublists where each sublist siza ==1
+    * By definition, a list with one element is sorted!
+* Merge each small sublist together to form a sorted larger list.
+* Continue to merge these sublists back intot the original list
 '''
+def mergeSort(alist):
+    if len(alist) > 1:
+        mid= len(alist) // 2
 
-'''
-# Stack Implementation
+        # uses additional space to create the left / right
+        #halves
+        lefthalf = alist[:mid]
+        righthalf = alist[mid:]
+        
+        # recursivley sort the lefthalf, then the righthalf
+        mergeSort(lefthalf)
+        mergeSort(righthalf)
 
-class Stack:
-    def __init__(self):
-	self.items = []
-	
-    def isEmpty(self):
-	return self.items == []
+        
+        # merge two sorted sublists (left / right halves)
+        # into the original list (alist)
+        i = 0 # index for lefthalf sublist
+        j = 0 # index for righthalf sublist
+        k = 0 # index for alist
 
-    def push(self, item):
-	self.items.append(item)
+        while i < len(lefthalf) and j < len(righthalf):
+            if lefthalf[i] <= righthalf[j]:
+                alist[k] = lefthalf[i]
+                i = i + 1
+            else:
+                alist[k] = righthalf[j]
+                j  = j + 1
+            k  = k + 1
+        # put the remaining lefthalf elements (if any) into
+	# alist
+        while i < len(lefthalf):
+            alist[k] = lefthalf[i]
+            i = i + 1
+            k = k + 1
 
-    def pop(self):
-	return self.items.pop()
+        # put the remaining lefthalf elements (if any) into
+	# alist
+        while j < len(righthalf):
+            alist[k] = lefthalf[j]
+            j = j + 1
+            k = k + 1
+# pytest
+def test_mergeSort():
+   numList1 = [9,8,7,6,5,4,3,2,1]
+   numList2 = [1,2,3,4,5,6,7,8,9]
+   numList3 = []
+   numList4 = [1,9,2,8,3,7,4,6,5]
+   numList5 = [5,4,6,3,7,2,8,1,9]
+   mergeSort(numList1)
+   mergeSort(numList2)
+   mergeSort(numList3)
+   mergeSort(numList4)
+   mergeSort(numList5)
 
-    def peek(self):
-	return self.items[len(self.items)-1]
+   assert numList1 == [1,2,3,4,5,6,7,8,9]
+   assert numList2 == [1,2,3,4,5,6,7,8,9]
+   assert numList3 == []
+   assert numList4 == [1,2,3,4,5,6,7,8,9]
+   assert numList5 == [1,2,3,4,5,6,7,8,9]
 
-    def size(self):
-	return len(self.items)
 
-# Pytests
-def test_insertIntoStack():
-    s = Stack()
-    assert s.isEmpty() == True
-    s.push("There")
-    s.push("Hi")
-    assert s.size() == 2
-    assert s.peek() == "Hi"
-    assert s.isEmpty() == False
-    assert s.peek() == "Hi"
 
-def test_deleteFromStack():
-    s = Stack()
-    s.push("There")
-    s.push("Hi")
-    x = s.pop()
-    assert x == "Hi"
-    assert s.peek() == "There"
-    assert s.size() == 1
-    assert s.isEmpty() == False
-    y = s.pop()
-    assert y == "There"
-    assert s.size() == 0
-    assert s.isEmpty() == True
-'''
+
+
+
+
