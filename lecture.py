@@ -1,68 +1,125 @@
+''' Priority Queues
+* In a queue structure, we can insert items from the back the queue then remove
+items from the back of the queue and remove items at the front of the queue
+    * The order of elements in the queue were dictated by when items were
+    inserted into the queue
+*Priority Queues are similar to Queues EXCEPT:
+    * We can insert items into the priority queue where an item has
+    some value representing a priority, and items are ordered in the
+    priority queue with respect to their priority value
+
+A HEAP is COMPLETE binary tree
+* A balanced binary tree: For any two leaf nodes, the difference of
+depth is at most one
+*Complete Tree: A binary tree where every level of the tree (except
+the deepest) must contain as many nodes as possible. The deepest level
+must have all nodes to the left as possible
+
+Two types of Heap: MinHeap and MaxHeap
+
+MaxHeap:
+*A complete tree
+*The value of a node is never less than the value of its children
+ 
+MinHeap:
+*A complete tree
+*The value of a node is never greater than the value of its children
+
+Heaps are an efficent way to implement a PRIORITY QUEUE
+* The only element we care about when removing from the priority queue
+is the root of the heap (the min value for a minHeap and the max value
+for a maxHeap)
+
+* Insertion order should not affect the strucure of the complete treee (since
+operations need to preserve the complete balanced tree property)
+
+* Since binary heaps have the complete property, we cab represent this with a
+python List
+    * easiest to represent the heap where the 0th index in the list is
+    meangingless
+    *The root of the binary heap is at index 1
+
+*A node’s index with respect to its parent and children can be generalized as:
+    * A node’s parent index: node_position // 2
+    * A node’s left child index: 2 * node_position
+    * A node’s right child index: 2 * node_position + 1
+
+Insertion into a MaxHeap Steps
+- insert the element in the first available location
+    * Keeps the binary tree complete
+- While the element’s parent is less than the element
+    * Swap the element with its parent
+- Insertion is O(log n) (height of tree is log n)
 
 
-def quickSort(alist):
-    quickSortHelper(alist, 0, len(alist) - 1)
 
-# helper function so we can pass in the first / last index
-# of lists
-def quickSortHelper(alist, first, last):
-    if first < last:
+Removing Max (root) element in a MaxHeap Steps
+*Since heaps are used to implement priority queues, removing
+the root element is a commonly used operation
+- Copy the root element into a variable
+- Assign the last_element in the Python List to the root position
+- While new root is less than one of its children
+    * Swap the largest child with the last_element
+- Return the original root element
+- Deletion is O(log n) (height of tree is log n) 
+'''
 
-    # will define the indices of the left / right sub lists
-        splitpoint = partition(alist, first, last)
+# MinHeap
+class BinHeap:
+    def __init__(self):
+        self.heapList = [0]
+        self.currentSize = 0
 
-    # recursively sort the left / right sub lists
-    quickSortHelper(alist, first, splitpoint-1) # left
-    quickSortHelper(alist, splitpoint+1, last) # right
+    #---insertion---
+    def percUp(self,i):
+        while i//2 > 0:
+            if self.heapList[i] < self.heapList[i//2]:
+                tmp = self.heapList[i//2]
+                self.heapList[i//2] = self.heapList[i]
+                self.heapList[i] = tmp
+            i = i//2
+    def insert(self,k):
+        self.heapList.append(k)
+        self.currentSize = self.currentSize + 1
+        self.percUp(self.currentSize)
+    # ----insertion----
 
-# partition function will organize left sublist < pivot
-# and right sub list > pivot
-def partition(alist, first, last):
-    pivotvalue = alist[first] # choose first element as pivot
+    #---deletion---
+    def percDown(self, i):
+        while (i * 2) <= self.currentSize:
+            mc = self.minChild(i)
+            if self.heapList[i] > self.heapList[mc]:
+                tmp = self.heapList[i]
+                self.heapList[i] = self.heapList[mc]
+                self.heapList[mc] = tmp
+            i = mc
 
-    leftmark = first + 1
-    rightmark = last
+    def minChild(self,i):
+        if i * 2 + 1 > self.currentSize:
+            return i * 2
+        else:
+            if self.heapList[i * 2] < self.heapList[i * 2 + 1]:
+                return i * 2
+            else:
+                return i * 2 + 1
 
-    done = False
-    while not done:
+    def delMin(self):
+        retval = self.heapList[1]
+        self.heapList[1] = self.heapList[self.currentSize]
+        self.currentSize = self.currentSize -1
+        self.heapList.pop()
+        self.percDown(1)
+        return retval
+        #---deletion---
 
-        # move leftmark until we find a left element > pivot
-	while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
-            leftmark = leftmark + 1
-
-	# move rightmark until we find a right element < pivot
-	while rightmark >= leftmark and alist[rightmark] >= pivotvalue:
-	    rightmark = rightmark - 1
-
-	# check if we're done swapping left / right elements in
-	# correct side
-	if rightmark < leftmark:
-	    done = True
-	else: # swap left and right elements into correct side of list
-	    temp = alist[leftmark]
-	    alist[leftmark] = alist[rightmark]
-	    alist[rightmark] = temp
-    # put the pivot value into the correct place (swap pivot w/ rightmark)
-    temp = alist[first] # pivot
-    alist[first] = alist[rightmark]
-    alist[rightmark] = temp
-
-    return rightmark
-
-def test_quickSort():
-   numList1 = [9,8,7,6,5,4,3,2,1]
-   numList2 = [1,2,3,4,5,6,7,8,9]
-   numList3 = []
-   numList4 = [1,9,2,8,3,7,4,6,5]
-   numList5 = [5,4,6,3,7,2,8,1,9]
-   quickSort(numList1)
-   quickSort(numList2)
-   quickeSort(numList3)
-   quickSort(numList4)
-   quickSort(numList5)
-
-   assert numList1 == [1,2,3,4,5,6,7,8,9]
-   assert numList2 == [1,2,3,4,5,6,7,8,9]
-   assert numList3 == []
-   assert numList4 == [1,2,3,4,5,6,7,8,9]
-   assert numList5 == [1,2,3,4,5,6,7,8,9]
+#pytest
+def test_Binheap():
+    bh = BinHeap()
+    bh.insert(5)
+    bh.insert(7)
+    bh.insert(3)
+    bh.insert(11)
+    assert bh.delMin() == 3
+    assert bh.delMin() == 5
+    assert bh.delMin() == 7
+    assert bh.delMin() == 11
