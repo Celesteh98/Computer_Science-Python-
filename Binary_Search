@@ -1,0 +1,88 @@
+'''
+#Example: Writting a program that counts the number of
+#words using a lsit and dictionary
+#wordlist.txt - a  file with one word per line
+#PeterPan.txt - a file with the Peter Pan novel
+DICT = {}
+infile = open("wordlist.txt", 'r')
+for x in infile: # goes through each line in the file
+    DICT[x.strip()] = 0 #creates an entry in DICT
+                        #with the word in wordlist as key
+print(len(DICT))
+infile.close()
+
+WORDLIST = []
+for y in DICT:
+    WORDLIST.append(y)
+print(len(WORDLIST))
+
+#Algorithm 1 - Lists
+from time import time
+start = time()
+infile = open("PeterPan.txt", 'r')
+largeText = infile.read() # the entire file is in one string
+infile.close()
+counter = 0
+worrds = largeText.split()  # splitting the string into a list
+                            # seperated by whitespace
+for x in words:
+    x = x.strip("\"\'()[]{},.?<>:;-")
+    if x in WORDLIST:
+        counter +=1
+end = time()
+print(counter)
+print("Time elasped with WORDLIST:", end - start)
+
+#Algorithm 2 - Dictonaries
+start = time()
+infile = open("PeterPan.txt", 'r')
+largeText = infile.read() # the entire file is in one string
+infile.close()
+counter = 0
+worrds = largeText.split()  # splitting the string into a list
+                            # seperated by whitespace
+for x in words:
+    x = x.strip("\"\'()[]{},.?<>:;-")
+    if x in WORDLIST:
+        counter +=1
+end= time()
+print(counter)
+print("Time elapsed with DICT:", end - start)
+'''
+
+def binarySerach(intList, item):
+    first = 0
+    last = len(intList) - 1
+    found = False
+
+    while first <= last and not found:
+        mid = (first + last) // 2
+        if intList[mid] == item:
+            found = True
+        else:
+            if item < intList[mid]:
+                last = mid - 1
+            else:
+                first = mid + 1
+    return found            
+
+def test_binarySearchNormal():
+    assert binarySearch([1,2,3,4,5,6,7,8,9,10],5) == True
+    assert binarySearch([1,2,3,4,5,6,7,8,9,10],0) == False
+    assert binarySearch([1,2,3,4,5,6,7,8,9,10],11) == False
+    assert binarySearch([1,2,3,4,5,6,7,8,9,10],1) == True
+    assert binarySearch([1,2,3,4,5,6,7,8,9,10],10) == True
+
+def test_binarySearchDuplicates():
+    assert binarySearch([-10,-5,0,1,1,4,4,7,8],0) == True
+    assert binarySearch([-10,-5,0,1,1,4,4,7,8],2) == False
+    assert binarySearch([-10,-5,0,1,1,4,4,7,8],4) == True
+    assert binarySearch([-10,-5,0,1,1,4,4,7,8],-5) == True
+
+def test_binarySearchEmptyList():
+    assert binarySearch([], 1): == False
+
+def test_binarySearchSameValues():
+    assert binarySearch ([5,5,5,5,5,5,5,5,5,5],5) == True
+    assert binarySearch ([5,5,5,5,5,5,5,5,5,5],0) == False
+
